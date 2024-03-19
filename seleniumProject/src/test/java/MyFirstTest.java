@@ -1,28 +1,11 @@
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 
-public class MyFirstTest {
-
-    private WebDriver driver;
-
-    @Before
-    public void start() {
-        driver = new ChromeDriver();
-    }
+public class MyFirstTest extends TestBase {
 
     @Test
     public void myFirstTest() {
         driver.get("http://www.google.com");
         driver.findElement(By.name("q")).sendKeys("webdriver\n");
-    }
-
-    @After
-    public void stop() {
-        driver.quit();
-        driver = null;
     }
 }
