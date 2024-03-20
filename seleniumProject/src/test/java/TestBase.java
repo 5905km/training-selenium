@@ -1,22 +1,30 @@
-import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
+
 public class TestBase {
 
-    public WebDriver driver;
+    public static ThreadLocal<WebDriver> tlDriver = new ThreadLocal<>();
+    public static WebDriver driver;
     public WebDriverWait wait;
 
     @Before
     public void start() {
-        driver = new ChromeDriver();
-    }
+        if (tlDriver.get() != null) {
+            driver = tlDriver.get();
+            wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+            return;
+        }
 
-    @After
-    public void stop() {
-        driver.quit();
-        driver = null;
+        driver = new ChromeDriver();
+        tlDriver.set(driver);
+        wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+
+        Runtime.getRuntime().addShutdownHook(
+                new Thread( () -> { driver.quit(); driver = null; })
+        );
     }
 }
