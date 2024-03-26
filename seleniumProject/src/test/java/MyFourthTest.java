@@ -10,7 +10,7 @@ public class MyFourthTest extends TestBase {
         driver.get("http://localhost/litecart/");
 
         for (int i = 0; i < driver.findElements(By.className("image-wrapper")).size(); i++) {
-            assertEquals(1, driver.findElements(By.className("image-wrapper")).get(i).findElements(By.cssSelector("[class^=sticker]")).size());
+            assertEquals(1, driver.findElements(By.className("image-wrapper")).get(i).findElements(By.className("sticker")).size());
         }
     }
 }
