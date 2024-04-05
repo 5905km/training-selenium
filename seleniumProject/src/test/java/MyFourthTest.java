@@ -1,5 +1,8 @@
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,8 +12,10 @@ public class MyFourthTest extends TestBase {
     public void myFirstTest() {
         driver.get("http://localhost/litecart/");
 
-        for (int i = 0; i < driver.findElements(By.className("image-wrapper")).size(); i++) {
-            assertEquals(1, driver.findElements(By.className("image-wrapper")).get(i).findElements(By.className("sticker")).size());
+        List<WebElement> products = driver.findElements(By.className("product"));
+
+        for (WebElement product : products) {
+            assertEquals(1, product.findElements(By.className("sticker")).size());
         }
     }
 }
