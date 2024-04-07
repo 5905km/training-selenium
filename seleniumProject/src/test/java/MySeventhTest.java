@@ -2,10 +2,14 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class MySeventhTest extends TestBase {
 
@@ -20,11 +24,12 @@ public class MySeventhTest extends TestBase {
         String campaignPriceHomePage = firstProductCampaigns.findElement(By.className("campaign-price")).getAttribute("textContent");
         String regularPriceColorHomePage = firstProductCampaigns.findElement(By.className("regular-price")).getCssValue("color");
         String campaignPriceColorHomePage = firstProductCampaigns.findElement(By.className("campaign-price")).getCssValue("color");
-        int regularPriceHeightHomePage = firstProductCampaigns.findElement(By.className("regular-price")).getSize().height;
-        int campaignPriceHeightHomePage = firstProductCampaigns.findElement(By.className("campaign-price")).getSize().height;
-        int regularPriceWidthHomePage = firstProductCampaigns.findElement(By.className("regular-price")).getSize().width;
-        int campaignPriceWidthHomePage = firstProductCampaigns.findElement(By.className("campaign-price")).getSize().width;
-
+        List<Integer> regularPriceColorHomePageRGBA = getNumbersFromString(regularPriceColorHomePage);
+        List<Integer> campaignPriceColorHomePageRGBA = getNumbersFromString(campaignPriceColorHomePage);
+        String regularPriceFontSizeHomePage = firstProductCampaigns.findElement(By.className("regular-price")).getCssValue("font-size");
+        String campaignPriceFontSizeHomePage = firstProductCampaigns.findElement(By.className("campaign-price")).getCssValue("font-size");
+        List<Integer> regularPriceFontSizeHomePageHp = getNumbersFromString(regularPriceFontSizeHomePage);
+        List<Integer> campaignPriceFontSizeHomePageHp = getNumbersFromString(campaignPriceFontSizeHomePage);
         firstProductCampaigns.click();
 
         String nameProductPage = driver.findElement(By.cssSelector("h1.title")).getAttribute("textContent");
@@ -32,10 +37,12 @@ public class MySeventhTest extends TestBase {
         String campaignPriceProductPage = driver.findElement(By.className("campaign-price")).getAttribute("textContent");
         String regularPriceColorProductPage = driver.findElement(By.className("regular-price")).getCssValue("color");
         String campaignPriceColorProductPage = driver.findElement(By.className("campaign-price")).getCssValue("color");
-        int regularPriceHeightProductPage = driver.findElement(By.className("regular-price")).getSize().height;
-        int campaignPriceHeightProductPage = driver.findElement(By.className("campaign-price")).getSize().height;
-        int regularPriceWidthProductPage = driver.findElement(By.className("regular-price")).getSize().width;
-        int campaignPriceWidthProductPage = driver.findElement(By.className("campaign-price")).getSize().width;
+        List<Integer> regularPriceColorProductPageRGBA = getNumbersFromString(regularPriceColorProductPage);
+        List<Integer> campaignPriceColorProductPageRGBA = getNumbersFromString(campaignPriceColorProductPage);
+        String regularPriceFontSizeProductPage = driver.findElement(By.className("regular-price")).getCssValue("font-size");
+        String campaignPriceFontSizeProductPage = driver.findElement(By.className("campaign-price")).getCssValue("font-size");
+        List<Integer> regularPriceFontSizeProductPageHp = getNumbersFromString(regularPriceFontSizeProductPage);
+        List<Integer> campaignPriceFontSizeProductPageHp = getNumbersFromString(campaignPriceFontSizeProductPage);
 
         assertEquals("Проверяю, что на главной странице и на странице товара совпадает текст названия товара",
                 nameHomePage, nameProductPage);
@@ -46,28 +53,39 @@ public class MySeventhTest extends TestBase {
         assertEquals("Проверяю, что на главной странице и на странице товара совпадает акционная цена",
                 regularPriceHomePage, regularPriceProductPage);
 
-        assertEquals("Проверяю цвет обычной цены на главной странице",
-                "rgba(119, 119, 119, 1)", regularPriceColorHomePage);
+        assertTrue("Проверяю цвет обычной цены на главной странице",
+                regularPriceColorHomePageRGBA.get(0).equals(regularPriceColorHomePageRGBA.get(1)) && regularPriceColorHomePageRGBA.get(0).equals(regularPriceColorHomePageRGBA.get(2)));
 
-        assertEquals("Проверяю цвет акционная цены на главной странице",
-                "rgba(204, 0, 0, 1)", campaignPriceColorHomePage);
+        assertTrue("Проверяю цвет обычной цены на странице товара",
+                regularPriceColorProductPageRGBA.get(0).equals(regularPriceColorProductPageRGBA.get(1)) && regularPriceColorProductPageRGBA.get(0).equals(regularPriceColorProductPageRGBA.get(2)));
 
-        assertEquals("Проверяю цвет обычной цены на странице товара",
-                "rgba(102, 102, 102, 1)", regularPriceColorProductPage);
+        assertAll("Проверяю цвет акционной цены на главной странице",
+                () -> assertTrue(0 == campaignPriceColorHomePageRGBA.get(1)),
+                () -> assertTrue(0 == campaignPriceColorHomePageRGBA.get(2))
+                );
 
-        assertEquals("Проверяю цвет акционной цены на странице товара",
-                "rgba(204, 0, 0, 1)", campaignPriceColorProductPage);
+        assertAll("Проверяю цвет акционной цены на странице товара",
+                () -> assertTrue(0 == campaignPriceColorProductPageRGBA.get(1)),
+                () -> assertTrue(0 == campaignPriceColorProductPageRGBA.get(2))
+        );
 
-        assertTrue("Проверяю, что высота акционной цены больше высоты обычной цены на главной странице",
-                campaignPriceHeightHomePage > regularPriceHeightHomePage);
+        assertTrue("Проверяю, что размер шрифта больше у акционной цены на главной странице",
+                campaignPriceFontSizeHomePageHp.get(0) > regularPriceFontSizeHomePageHp.get(0));
 
-        assertTrue("Проверяю, что ширина акционной цены больше ширины обычной цены на главной странице",
-                campaignPriceWidthHomePage > regularPriceWidthHomePage);
+        assertTrue("Проверяю, что размер шрифта больше у акционной цены на странице товара",
+                campaignPriceFontSizeProductPageHp.get(0) > regularPriceFontSizeProductPageHp.get(0));
 
-        assertTrue("Проверяю, что высота акционной цены больше высоты обычной цены на странице товара",
-                campaignPriceHeightProductPage > regularPriceHeightProductPage);
+    }
 
-        assertTrue("Проверяю, что ширина акционной цены больше ширины обычной цены на странице товара",
-                campaignPriceWidthProductPage > regularPriceWidthProductPage);
+    public ArrayList<Integer> getNumbersFromString(String color) {
+        ArrayList<Integer> numbers = new ArrayList<>();
+        Pattern pattern = Pattern.compile("\\d+");
+        Matcher matcher = pattern.matcher(color);
+
+        while (matcher.find()) {
+            numbers.add(Integer.valueOf(matcher.group()));
+        }
+
+        return numbers;
     }
 }
