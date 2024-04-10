@@ -28,8 +28,8 @@ public class MySeventhTest extends TestBase {
         List<Integer> campaignPriceColorHomePageRGBA = getNumbersFromString(campaignPriceColorHomePage);
         String regularPriceFontSizeHomePage = firstProductCampaigns.findElement(By.className("regular-price")).getCssValue("font-size");
         String campaignPriceFontSizeHomePage = firstProductCampaigns.findElement(By.className("campaign-price")).getCssValue("font-size");
-        List<Integer> regularPriceFontSizeHomePageHp = getNumbersFromString(regularPriceFontSizeHomePage);
-        List<Integer> campaignPriceFontSizeHomePageHp = getNumbersFromString(campaignPriceFontSizeHomePage);
+        Double regularPriceFontSizeHomePageHp = getNumbersFloatingFromString(regularPriceFontSizeHomePage);
+        Double campaignPriceFontSizeHomePageHp = getNumbersFloatingFromString(campaignPriceFontSizeHomePage);
         firstProductCampaigns.click();
 
         String nameProductPage = driver.findElement(By.cssSelector("h1.title")).getAttribute("textContent");
@@ -41,8 +41,8 @@ public class MySeventhTest extends TestBase {
         List<Integer> campaignPriceColorProductPageRGBA = getNumbersFromString(campaignPriceColorProductPage);
         String regularPriceFontSizeProductPage = driver.findElement(By.className("regular-price")).getCssValue("font-size");
         String campaignPriceFontSizeProductPage = driver.findElement(By.className("campaign-price")).getCssValue("font-size");
-        List<Integer> regularPriceFontSizeProductPageHp = getNumbersFromString(regularPriceFontSizeProductPage);
-        List<Integer> campaignPriceFontSizeProductPageHp = getNumbersFromString(campaignPriceFontSizeProductPage);
+        Double regularPriceFontSizeProductPageHp = getNumbersFloatingFromString(regularPriceFontSizeProductPage);
+        Double campaignPriceFontSizeProductPageHp = getNumbersFloatingFromString(campaignPriceFontSizeProductPage);
 
         assertEquals("Проверяю, что на главной странице и на странице товара совпадает текст названия товара",
                 nameHomePage, nameProductPage);
@@ -70,11 +70,16 @@ public class MySeventhTest extends TestBase {
         );
 
         assertTrue("Проверяю, что размер шрифта больше у акционной цены на главной странице",
-                campaignPriceFontSizeHomePageHp.get(0) > regularPriceFontSizeHomePageHp.get(0));
+                campaignPriceFontSizeHomePageHp > regularPriceFontSizeHomePageHp);
 
         assertTrue("Проверяю, что размер шрифта больше у акционной цены на странице товара",
-                campaignPriceFontSizeProductPageHp.get(0) > regularPriceFontSizeProductPageHp.get(0));
+                campaignPriceFontSizeProductPageHp > regularPriceFontSizeProductPageHp);
+    }
 
+    public Double getNumbersFloatingFromString(String size) {
+        String sizeWithoutUnitMeasurement = size.replaceAll("px", "");
+
+        return Double.parseDouble(sizeWithoutUnitMeasurement);
     }
 
     public ArrayList<Integer> getNumbersFromString(String color) {
